@@ -17,7 +17,6 @@ public class MessageService {
 
     public Optional<Message> createMessage(Message message) {
         return Optional.of(messageRepository.save(message));
-        
     }
 
     public List<Message> getAllMessages() {
@@ -26,7 +25,6 @@ public class MessageService {
 
     public Optional<Message> getMessageById(Integer messageId) {
         return messageRepository.findById(messageId);
-        
     }
 
     public boolean deleteMessage(Integer messageId) {
@@ -38,14 +36,14 @@ public class MessageService {
     }
 
     public Optional<Message> updateMessage(Integer messageId, String messageText) {
-        return null;
-        
+        return messageRepository.findById(messageId)
+                .map(message -> {
+                    message.setMessageText(messageText);
+                    return messageRepository.save(message);
+                });
     }
 
     public List<Message> getMessagesByUserId(Integer userId) {
-        return null;
-
+        return messageRepository.findByPostedBy(userId);
     }
-
-
 }
