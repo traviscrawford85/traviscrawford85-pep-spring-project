@@ -24,7 +24,7 @@ import java.util.Optional;
  */
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping
 public class SocialMediaController {
 
     @Autowired
@@ -55,7 +55,8 @@ public class SocialMediaController {
     @PostMapping("/messages")
     public ResponseEntity<Message> createMessage(@RequestBody Message message) {
         if (message.getMessageText() == null || message.getMessageText().isBlank() ||
-                message.getMessageText().length() > 255 || message.getPostedBy() == null) {
+                message.getMessageText().length() > 255 || message.getPostedBy() == null ||
+                !accountService.existsById(message.getPostedBy())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -74,7 +75,7 @@ public class SocialMediaController {
     public ResponseEntity<Message> getMessageById(@PathVariable Integer messageId) {
         Optional<Message> message = messageService.getMessageById(messageId);
         return message.map(msg -> new ResponseEntity<>(msg, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.OK)); // Return 200 with empty body if not found
     }
 
     @DeleteMapping("/messages/{messageId}")
@@ -92,7 +93,7 @@ public class SocialMediaController {
 
         Optional<Message> updatedMessage = messageService.updateMessage(messageId, message.getMessageText());
         return updatedMessage.map(msg -> new ResponseEntity<>("1", HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST)); // Return 400 if not found
     }
 
     @GetMapping("/accounts/{accountId}/messages")

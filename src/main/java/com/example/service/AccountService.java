@@ -17,17 +17,19 @@ public class AccountService {
             return Optional.empty();
         }
         return Optional.of(accountRepository.save(account));
-
     }
 
     public Optional<Account> loginAccount(String username, String password) {
         return accountRepository.findByUsername(username)
                 .filter(acc -> acc.getPassword().equals(password));
-
     }
 
     public Optional<Account> findById(Integer id) {
         return accountRepository.findById(id);
     }
 
+    // New method to check if a user exists by ID
+    public boolean existsById(Integer id) {
+        return accountRepository.existsById(id);
+    }
 }

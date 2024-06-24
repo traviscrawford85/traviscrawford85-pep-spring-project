@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.entity.Message;
 import com.example.repository.MessageRepository;
+import com.example.repository.AccountRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +16,15 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
+    @Autowired
+    private AccountRepository accountRepository;
+
     public Optional<Message> createMessage(Message message) {
-        return Optional.of(messageRepository.save(message));
+        if (accountRepository.existsById(message.getPostedBy())) {
+            Message savedMessage = messageRepository.save(message);
+            return Optional.of(savedMessage);
+        }
+        return Optional.empty();
     }
 
     public List<Message> getAllMessages() {
